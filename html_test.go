@@ -282,3 +282,48 @@ func TestGetImageFromHTML(t *testing.T) {
 		})
 	}
 }
+
+func TestExtractPageBasics(t *testing.T) {
+	tests := []struct {
+		name          string
+		inputURL      string
+		inputBody     string
+		expected      PageData
+	}{
+		{
+			name:    "a bit of everything",
+			inputURL: "https://blog.boot.dev",
+			inputBody: `
+			<html>
+				<body>
+        			<h1>Test Title</h1>
+       				<p>This is the first paragraph.</p>
+        			<a href="/link1">Link 1</a>
+        			<img src="/image1.jpg" alt="Image 1">
+    			</body>
+			</html>
+			`,
+			expected: PageData {
+				Url : "https://blog.boot.dev",
+				H1 : []string{"Test Title"},
+				FirstParagraph: "This is the first paragraph.",
+				OutgoingLinks:  []string{"https://blog.boot.dev/link1"},
+				ImageUrls:  []string{"https://blog.boot.dev/image1.jpg"},
+			},
+		},
+	}
+
+	for i, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			urlNormalized, err := url.Parse(tc.inputURL)
+			if err != nil {
+				t.Errorf("couldn't parse input URL: %v", err)
+				return
+			}
+			actual := extractPageData(tc.inputBody, urlNormalized)
+			if !reflect.DeepEqual(tc.expected, actual) {
+				t.Errorf("Test %v - %s FAIL: expected URLs: %v, actual: %v", i, tc.name, tc.expected, actual)
+			}
+		})
+	}
+}
