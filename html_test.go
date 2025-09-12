@@ -10,7 +10,7 @@ func TestGetH1FromHTML(t *testing.T) {
 	tests := []struct {
 		name          string
 		inputBody     string
-		expected      []string
+		expected      string
 	}{
 		{
 			name:     "one H1",
@@ -25,7 +25,7 @@ func TestGetH1FromHTML(t *testing.T) {
 				</body>
 		  	</html>
 			`,
-			expected: []string{"Welcome to Boot.dev"},
+			expected: "Welcome to Boot.dev",
 		},
 		{
 			name:     "empty results",
@@ -35,7 +35,7 @@ func TestGetH1FromHTML(t *testing.T) {
 			</body>
 		</html>
 		`,
-			expected: []string{},
+			expected: "",
 		},
 		{
 			name:     "two H1 no H2",
@@ -52,17 +52,13 @@ func TestGetH1FromHTML(t *testing.T) {
 				</body>
 		  	</html>
 			`,
-			expected: []string{"Welcome to Boot.dev", "Hope you like it!"},
+			expected: "Welcome to Boot.dev",
 		},
 	}
 
 	for i, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, err := getH1FromHTML(tc.inputBody)
-			if err != nil {
-				t.Fatalf("Test %v - '%s' FAIL: unexpected error: %v", i, tc.name, err)
-				return
-			}
+			actual := getH1FromHTML(tc.inputBody)
 			if !reflect.DeepEqual(tc.expected, actual) {
 				t.Errorf("Test %v - %s FAIL: expected Headers: %v, actual: %v", i, tc.name, tc.expected, actual)
 			}
@@ -135,11 +131,7 @@ func TestGetFirstParagraphFromHTMLMainPriority(t *testing.T) {
 
 	for i, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, err := getFirstParagraphFromHTML(tc.inputBody)
-			if err != nil {
-				t.Errorf("Test %v - '%s' FAIL: unexpected error: %v", i, tc.name, err)
-				return
-			}
+			actual := getFirstParagraphFromHTML(tc.inputBody)
 			if actual != tc.expected {
 				t.Errorf("Test %v - %s FAIL: expected 1st Paragraph: %v, actual: %v", i, tc.name, tc.expected, actual)
 			}
@@ -305,7 +297,7 @@ func TestExtractPageBasics(t *testing.T) {
 			`,
 			expected: PageData {
 				Url : "https://blog.boot.dev",
-				H1 : []string{"Test Title"},
+				H1 : "Test Title",
 				FirstParagraph: "This is the first paragraph.",
 				OutgoingLinks:  []string{"https://blog.boot.dev/link1"},
 				ImageUrls:  []string{"https://blog.boot.dev/image1.jpg"},

@@ -10,35 +10,32 @@ import (
 
 type PageData struct {
 	Url             string
-	H1              []string
+	H1              string
 	FirstParagraph string
 	OutgoingLinks  []string
 	ImageUrls      []string
 }
 
-func getH1FromHTML(html string) ([]string, error) {
+func getH1FromHTML(html string) string {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
-		return nil, err
+		return ""
 	}
-	result := []string{}
-	doc.Find("h1").Each(func (i int, s *goquery.Selection) {
-		result = append(result, s.Text())
-	})
-	return result, nil
+	h1 := doc.Find("h1").First().Text()
+	return strings.TrimSpace(h1)
 }
 
-func getFirstParagraphFromHTML(html string) (string, error) {
+func getFirstParagraphFromHTML(html string) string{
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
-		return "", err
+		return ""
 	}
 	main := doc.Find("main").Find("p").Text()
 	if main != "" {
-		return main, nil
+		return main
 	}
 	p := doc.Find("p").Text()
-	return p, nil
+	return p
 }
 
 
@@ -81,24 +78,18 @@ func getImagesFromHTML(html string, baseURL *url.URL) ([]string, error) {
 }
 
 func extractPageData(html string, pageURL *url.URL) PageData{
+	h1 := getH1FromHTML(html)
+	firstParagraph := getFirstParagraphFromHTML(html)
 	parsedUrls, err := getURLsFromHTML(html, pageURL)
 	if err != nil {
-		log.Fatalf("error getting URL: %s", err.Error())
-	}
-
-	h1, err := getH1FromHTML(html)
-	if err != nil {
-		log.Fatalf("error getting H1: %s", err.Error())
-	}
-
-	firstParagraph, err := getFirstParagraphFromHTML(html)
-	if err != nil {
-		log.Fatalf("error getting first paragraph: %s", err.Error())
+		log.Printf("error getting URL: %s\n", err.Error())
+		parsedUrls = nil
 	}
 
 	parsedImg, err := getImagesFromHTML(html, pageURL)
 	if err != nil {
-		log.Fatalf("error getting images: %s", err.Error())
+		log.Printf("error getting images: %s", err.Error())
+		parsedImg = nil
 	}
 
 	return PageData{
@@ -107,6 +98,5 @@ func extractPageData(html string, pageURL *url.URL) PageData{
 		FirstParagraph: firstParagraph,
 		OutgoingLinks: parsedUrls,
 		ImageUrls: parsedImg,
-	}
-	
+	}	
 }
