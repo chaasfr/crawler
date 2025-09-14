@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"net/url"
 	"strings"
 
@@ -99,4 +102,35 @@ func extractPageData(html string, pageURL *url.URL) PageData{
 		OutgoingLinks: parsedUrls,
 		ImageUrls: parsedImg,
 	}	
+}
+
+func getHTML(rawURL string) (string, error) {
+	req, err := http.NewRequest(http.MethodGet, rawURL, nil)
+	if err != nil {
+		fmt.Printf("error creating req to %s: %s\n", rawURL, err.Error())
+		return "", err
+	}
+	req.Header.Add("User-Agent", "BootCrawler/1.0")
+
+	res, err := http.DefaultClient.Do(req)
+	if res.StatusCode > 400 {
+		fmt.Printf("req to %s returned an error: %v - %s\n", rawURL, res.StatusCode, res.Status)
+		return "", fmt.Errorf("req error:  %v - %s", res.StatusCode, res.Status)
+	}
+	if res.Header.Get("content-type") != "text/html" {
+		fmt.Printf("content from %s is not html\n", rawURL)
+		return "", fmt.Errorf("content from %s is not html", rawURL)
+	}
+	if err != nil {
+		fmt.Printf("error executing req to %s - %s\n", rawURL, err.Error())
+		return "", err
+	}
+
+	resBody, err := io.ReadAll(res.Body)
+ 	if err != nil {
+		fmt.Printf("error parsing req to %s: %s\n", rawURL, err.Error())
+		return "", err
+	}
+
+	return string(resBody), nil
 }
