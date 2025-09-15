@@ -238,11 +238,11 @@ func TestGetImageFromHTML(t *testing.T) {
 			inputBody: `
 		<html>
 			<body>
-				<img src="https;//www.mywebsite.com/logo.png" alt="Logo">
+				<img src="https://www.mywebsite.com/logo.png" alt="Logo">
 			</body>
 		</html>
 		`,
-			expected: []string{"https;//www.mywebsite.com/logo.png"},
+			expected: []string{"https://www.mywebsite.com/logo.png"},
 		},{
 			name:     "no image",
 			inputURL: "https://blog.boot.dev",

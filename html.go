@@ -12,8 +12,8 @@ import (
 )
 
 type PageData struct {
-	Url             string
-	H1              string
+	Url            string
+	H1             string
 	FirstParagraph string
 	OutgoingLinks  []string
 	ImageUrls      []string
@@ -50,13 +50,22 @@ func getURLsFromHTML(html string, baseURL *url.URL) ([]string, error) {
 	result := []string{}
 	doc.Find("a[href]").Each(func (i int, s *goquery.Selection) {
 		href, ok := s.Attr("href")
-		if ok {
-			if strings.HasPrefix(href, "/") {
-				result = append(result, baseURL.String() + href)
-			} else {
-				result = append(result, href)
-			}
+		if !ok {
+			return
 		}
+		href = strings.TrimSpace(href)
+		if href == "" {
+			return
+		}
+
+		u, err := url.Parse(href)
+		if err != nil {
+			fmt.Printf("couldn't parse href %q: %v\n", href, err)
+			return
+		}
+
+		resolved := baseURL.ResolveReference(u)
+		result = append(result, resolved.String())
 	})
 	return result, nil
 }
@@ -68,14 +77,19 @@ func getImagesFromHTML(html string, baseURL *url.URL) ([]string, error) {
 	}
 	result := []string{}
 	doc.Find("img[src]").Each(func (i int, s *goquery.Selection) {
-		href, ok := s.Attr("src")
-		if ok {
-			if strings.HasPrefix(href, "/") {
-				result = append(result, baseURL.String() + href)
-			} else {
-				result = append(result, href)
-			}
+		src, ok := s.Attr("src")
+		if !ok || strings.TrimSpace(src) == "" {
+			return
 		}
+
+		u, err := url.Parse(src)
+		if err != nil {
+			fmt.Printf("couldn't parse src %q: %v\n", src, err)
+			return
+		}
+
+		absolute := baseURL.ResolveReference(u)
+		result = append(result, absolute.String())
 	})
 	return result, nil
 }
@@ -113,11 +127,12 @@ func getHTML(rawURL string) (string, error) {
 	req.Header.Add("User-Agent", "BootCrawler/1.0")
 
 	res, err := http.DefaultClient.Do(req)
-	if res.StatusCode > 400 {
+	if res.StatusCode > 399 {
 		fmt.Printf("req to %s returned an error: %v - %s\n", rawURL, res.StatusCode, res.Status)
 		return "", fmt.Errorf("req error:  %v - %s", res.StatusCode, res.Status)
 	}
-	if res.Header.Get("content-type") != "text/html" {
+	contentType := res.Header.Get("Content-Type")
+	if !strings.Contains(contentType, "text/html") {
 		fmt.Printf("content from %s is not html\n", rawURL)
 		return "", fmt.Errorf("content from %s is not html", rawURL)
 	}
