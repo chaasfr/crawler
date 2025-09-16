@@ -19,9 +19,7 @@ It visits pages starting from a seed URL, extracts structured content (e.g. head
 - **Unit tests** for core components
 
 ---
-
-## 🗂️ Project structure
-├── main.go # CLI entrypoint
+─ main.go # CLI entrypoint
 ├── config.go # CLI flags & configuration
 ├── crawler.go # Crawl orchestration & queueing
 ├── html.go # HTML parsing utilities (e.g., H1 extraction)
