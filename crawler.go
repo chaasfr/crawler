@@ -9,7 +9,7 @@ import (
 
 func (cfg *Config) addPageVisit(normalizedURL string) bool {
 	cfg.mu.Lock()
-    defer cfg.mu.Unlock()
+	defer cfg.mu.Unlock()
 	_, seen := cfg.Pages[normalizedURL]
 	if seen {
 		return false
@@ -49,7 +49,7 @@ func (cfg *Config) crawlPage(rawCurrentURL string) {
 	if err != nil {
 		log.Fatalf("error normalizing url: %s\n", err)
 	}
-	
+
 	if isFirst := cfg.addPageVisit(normalizedURL); !isFirst {
 		return
 	}

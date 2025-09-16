@@ -24,8 +24,8 @@ func (p PageData) toSlice() []string {
 		p.Url,
 		p.H1,
 		p.FirstParagraph,
-		strings.Join(p.OutgoingLinks,";"),
-		strings.Join(p.ImageUrls,";"),
+		strings.Join(p.OutgoingLinks, ";"),
+		strings.Join(p.ImageUrls, ";"),
 	}
 }
 
@@ -38,7 +38,7 @@ func getH1FromHTML(html string) string {
 	return strings.TrimSpace(h1)
 }
 
-func getFirstParagraphFromHTML(html string) string{
+func getFirstParagraphFromHTML(html string) string {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
 		return ""
@@ -51,14 +51,13 @@ func getFirstParagraphFromHTML(html string) string{
 	return p
 }
 
-
 func getURLsFromHTML(html string, baseURL *url.URL) ([]string, error) {
-	doc, err:= goquery.NewDocumentFromReader(strings.NewReader(html))
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
 		return nil, err
 	}
 	result := []string{}
-	doc.Find("a[href]").Each(func (i int, s *goquery.Selection) {
+	doc.Find("a[href]").Each(func(i int, s *goquery.Selection) {
 		href, ok := s.Attr("href")
 		if !ok {
 			return
@@ -81,12 +80,12 @@ func getURLsFromHTML(html string, baseURL *url.URL) ([]string, error) {
 }
 
 func getImagesFromHTML(html string, baseURL *url.URL) ([]string, error) {
-	doc, err:= goquery.NewDocumentFromReader(strings.NewReader(html))
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {
 		return nil, err
 	}
 	result := []string{}
-	doc.Find("img[src]").Each(func (i int, s *goquery.Selection) {
+	doc.Find("img[src]").Each(func(i int, s *goquery.Selection) {
 		src, ok := s.Attr("src")
 		if !ok || strings.TrimSpace(src) == "" {
 			return
@@ -104,7 +103,7 @@ func getImagesFromHTML(html string, baseURL *url.URL) ([]string, error) {
 	return result, nil
 }
 
-func extractPageData(html string, pageURL *url.URL) PageData{
+func extractPageData(html string, pageURL *url.URL) PageData {
 	h1 := getH1FromHTML(html)
 	firstParagraph := getFirstParagraphFromHTML(html)
 	parsedUrls, err := getURLsFromHTML(html, pageURL)
@@ -120,12 +119,12 @@ func extractPageData(html string, pageURL *url.URL) PageData{
 	}
 
 	return PageData{
-		Url: pageURL.String(),
-		H1: h1,
+		Url:            pageURL.String(),
+		H1:             h1,
 		FirstParagraph: firstParagraph,
-		OutgoingLinks: parsedUrls,
-		ImageUrls: parsedImg,
-	}	
+		OutgoingLinks:  parsedUrls,
+		ImageUrls:      parsedImg,
+	}
 }
 
 func getHTML(rawURL string) (string, error) {
@@ -152,7 +151,7 @@ func getHTML(rawURL string) (string, error) {
 	}
 
 	resBody, err := io.ReadAll(res.Body)
- 	if err != nil {
+	if err != nil {
 		fmt.Printf("error parsing req to %s: %s\n", rawURL, err.Error())
 		return "", err
 	}

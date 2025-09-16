@@ -6,7 +6,6 @@ import (
 	"sync"
 )
 
-
 type Config struct {
 	Pages              map[string]PageData
 	BaseUrl            *url.URL

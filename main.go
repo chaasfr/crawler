@@ -24,7 +24,7 @@ func main() {
 	}
 
 	fmt.Println("starting crawl of: " + baseUrl.String())
-	
+
 	maxConcurrency, err := strconv.Atoi(args[1])
 	if err != nil {
 		log.Fatalf("error parsing to maxConcurrency to int: %s", err.Error())
@@ -44,7 +44,7 @@ func main() {
 	cfg.Wg.Wait()
 
 	fmt.Println(" ==== DONE =====")
-	
+
 	reportFileName := "report.csv"
 
 	err = writeCSVReport(cfg.Pages, reportFileName)

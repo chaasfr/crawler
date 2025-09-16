@@ -8,12 +8,12 @@ import (
 
 func TestGetH1FromHTML(t *testing.T) {
 	tests := []struct {
-		name          string
-		inputBody     string
-		expected      string
+		name      string
+		inputBody string
+		expected  string
 	}{
 		{
-			name:     "one H1",
+			name: "one H1",
 			inputBody: `
 			<html>
 				<body>
@@ -28,7 +28,7 @@ func TestGetH1FromHTML(t *testing.T) {
 			expected: "Welcome to Boot.dev",
 		},
 		{
-			name:     "empty results",
+			name: "empty results",
 			inputBody: `
 		<html>
 			<body>
@@ -38,7 +38,7 @@ func TestGetH1FromHTML(t *testing.T) {
 			expected: "",
 		},
 		{
-			name:     "two H1 no H2",
+			name: "two H1 no H2",
 			inputBody: `
 			<html>
 				<body>
@@ -68,12 +68,12 @@ func TestGetH1FromHTML(t *testing.T) {
 
 func TestGetFirstParagraphFromHTMLMainPriority(t *testing.T) {
 	tests := []struct {
-		name          string
-		inputBody     string
-		expected      string
+		name      string
+		inputBody string
+		expected  string
 	}{
 		{
-			name:     "one paragraph",
+			name: "one paragraph",
 			inputBody: `
 			<html>
 				<body>
@@ -87,7 +87,7 @@ func TestGetFirstParagraphFromHTMLMainPriority(t *testing.T) {
 			expected: "Learn to code by building real projects.",
 		},
 		{
-			name:     "empty results",
+			name: "empty results",
 			inputBody: `
 		<html>
 			<body>
@@ -97,7 +97,7 @@ func TestGetFirstParagraphFromHTMLMainPriority(t *testing.T) {
 			expected: "",
 		},
 		{
-			name:     "two p one main",
+			name: "two p one main",
 			inputBody: `
 			<html>
 				<body>
@@ -114,7 +114,7 @@ func TestGetFirstParagraphFromHTMLMainPriority(t *testing.T) {
 			expected: "Learn to code by building real projects.",
 		},
 		{
-			name:     "one p no main",
+			name: "one p no main",
 			inputBody: `
 			<html>
 				<body>
@@ -141,10 +141,10 @@ func TestGetFirstParagraphFromHTMLMainPriority(t *testing.T) {
 
 func TestGetURLFromHTML(t *testing.T) {
 	tests := []struct {
-		name          string
-		inputURL      string
-		inputBody     string
-		expected      []string
+		name      string
+		inputURL  string
+		inputBody string
+		expected  []string
 	}{
 		{
 			name:     "absolute and relative URLs",
@@ -216,10 +216,10 @@ func TestGetURLFromHTML(t *testing.T) {
 
 func TestGetImageFromHTML(t *testing.T) {
 	tests := []struct {
-		name          string
-		inputURL      string
-		inputBody     string
-		expected      []string
+		name      string
+		inputURL  string
+		inputBody string
+		expected  []string
 	}{
 		{
 			name:     "relative URLs",
@@ -232,7 +232,7 @@ func TestGetImageFromHTML(t *testing.T) {
 		</html>
 		`,
 			expected: []string{"https://blog.boot.dev/logo.png"},
-		},{
+		}, {
 			name:     "absolute URLs",
 			inputURL: "https://blog.boot.dev",
 			inputBody: `
@@ -243,7 +243,7 @@ func TestGetImageFromHTML(t *testing.T) {
 		</html>
 		`,
 			expected: []string{"https://www.mywebsite.com/logo.png"},
-		},{
+		}, {
 			name:     "no image",
 			inputURL: "https://blog.boot.dev",
 			inputBody: `
@@ -277,13 +277,13 @@ func TestGetImageFromHTML(t *testing.T) {
 
 func TestExtractPageBasics(t *testing.T) {
 	tests := []struct {
-		name          string
-		inputURL      string
-		inputBody     string
-		expected      PageData
+		name      string
+		inputURL  string
+		inputBody string
+		expected  PageData
 	}{
 		{
-			name:    "a bit of everything",
+			name:     "a bit of everything",
 			inputURL: "https://blog.boot.dev",
 			inputBody: `
 			<html>
@@ -295,12 +295,12 @@ func TestExtractPageBasics(t *testing.T) {
     			</body>
 			</html>
 			`,
-			expected: PageData {
-				Url : "https://blog.boot.dev",
-				H1 : "Test Title",
+			expected: PageData{
+				Url:            "https://blog.boot.dev",
+				H1:             "Test Title",
 				FirstParagraph: "This is the first paragraph.",
 				OutgoingLinks:  []string{"https://blog.boot.dev/link1"},
-				ImageUrls:  []string{"https://blog.boot.dev/image1.jpg"},
+				ImageUrls:      []string{"https://blog.boot.dev/image1.jpg"},
 			},
 		},
 	}

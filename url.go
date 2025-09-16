@@ -10,6 +10,6 @@ func normalizeURL(input string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	cleanUrl := urlReceived.Host + strings.TrimSuffix(urlReceived.Path, "/") 
+	cleanUrl := urlReceived.Host + strings.TrimSuffix(urlReceived.Path, "/")
 	return cleanUrl, nil
 }

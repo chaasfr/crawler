@@ -6,9 +6,9 @@ import (
 
 func TestNormalizeURL(t *testing.T) {
 	tests := []struct {
-		name          string
-		inputURL      string
-		expected      string
+		name     string
+		inputURL string
+		expected string
 	}{
 		{
 			name:     "remove scheme https",
