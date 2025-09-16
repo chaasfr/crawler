@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (cfg *Config) addPageVisit(normalizedURL string) (isFirst bool) {
+func (cfg *Config) addPageVisit(normalizedURL string) bool {
 	cfg.mu.Lock()
     defer cfg.mu.Unlock()
 	_, seen := cfg.Pages[normalizedURL]
@@ -24,19 +24,30 @@ func (cfg *Config) setPageData(normalizedURL string, data PageData) {
 	cfg.Pages[normalizedURL] = data
 }
 
+func (cfg *Config) reachedMaxPage() bool {
+	cfg.mu.Lock()
+	defer cfg.mu.Unlock()
+	return len(cfg.Pages) >= cfg.maxPages
+}
+
 func (cfg *Config) crawlPage(rawCurrentURL string) {
+
 	cfg.ConcurrencyControl <- struct{}{}
 	defer func() {
 		<-cfg.ConcurrencyControl
 		cfg.Wg.Done()
 	}()
 
+	if cfg.reachedMaxPage() {
+		return
+	}
+
 	if !strings.HasPrefix(rawCurrentURL, cfg.BaseUrl.String()) {
 		return
 	}
 	normalizedURL, err := normalizeURL(rawCurrentURL)
 	if err != nil {
-		log.Fatalf("error noramlizing url: %s\n", err)
+		log.Fatalf("error normalizing url: %s\n", err)
 	}
 	
 	if isFirst := cfg.addPageVisit(normalizedURL); !isFirst {

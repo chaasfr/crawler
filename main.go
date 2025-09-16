@@ -5,15 +5,16 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"strconv"
 )
 
 func main() {
 	args := os.Args[1:]
-	if len(args) < 1 {
-		fmt.Println("no website provided")
+	if len(args) < 3 {
+		fmt.Println("usage: ./crawler URL maxConcurrency maxPages")
 		os.Exit(1)
 	}
-	if len(args) > 1 {
+	if len(args) > 3 {
 		fmt.Println("too many arguments provided")
 		os.Exit(1)
 	}
@@ -24,9 +25,16 @@ func main() {
 
 	fmt.Println("starting crawl of: " + baseUrl.String())
 	
-	maxConcurrency := 5
+	maxConcurrency, err := strconv.Atoi(args[1])
+	if err != nil {
+		log.Fatalf("error parsing to maxConcurrency to int: %s", err.Error())
+	}
+	maxPages, err := strconv.Atoi(args[2])
+	if err != nil {
+		log.Fatalf("error parsing to maxPages to int: %s", err.Error())
+	}
 
-	cfg, err := configure(baseUrl.String(), maxConcurrency)
+	cfg, err := configure(baseUrl.String(), maxConcurrency, maxPages)
 	if err != nil {
 		fmt.Printf("Error - configure: %v", err)
 		return
@@ -37,6 +45,7 @@ func main() {
 	cfg.Wg.Wait()
 
 	fmt.Println(" ==== DONE =====")
+	fmt.Printf(" crawled %v pages\n", len(cfg.Pages))
 	for key, _ := range cfg.Pages {
 		fmt.Printf("crawled %s \n", key)
 	}
