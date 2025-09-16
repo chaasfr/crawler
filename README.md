@@ -19,14 +19,6 @@ It visits pages starting from a seed URL, extracts structured content (e.g. head
 - **Unit tests** for core components
 
 ---
-─ main.go # CLI entrypoint
-├── config.go # CLI flags & configuration
-├── crawler.go # Crawl orchestration & queueing
-├── html.go # HTML parsing utilities (e.g., H1 extraction)
-├── url.go # URL normalization & helpers
-├── csv_report.go # CSV writer/report schema
-├── html_test.go # HTML parsing tests
-└── url_test.go # URL helper tests
 
 ## 🚀 Quickstart
 
