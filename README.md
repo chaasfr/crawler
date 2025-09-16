@@ -5,26 +5,58 @@
 [![Build](https://github.com/chaasfr/crawler/actions/workflows/go.yml/badge.svg)](https://github.com/chaasfr/crawler/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A lightweight and flexible **web crawler in Go** designed for developers and data enthusiasts.  
-It fetches web pages, extracts structured information (e.g., headers, links, metadata), and exports reports in CSV format for further analysis.
+A lightweight and extensible **web crawler in Go**.  
+It visits pages starting from a seed URL, extracts structured content (e.g. headers like `<h1>`), normalizes/filters URLs, and writes a **CSV report** for analysis.
 
 ---
 
 ## ✨ Features
-- Simple CLI interface.
-- Extracts and parses HTML elements (headers, links, etc.).
-- Generates structured **CSV reports**.
-- Written in Go: fast, portable, and easy to extend.
+
+- **Fast & simple CLI** built with Go
+- **HTML parsing helpers** for extracting elements (e.g., page headers)
+- **URL normalization & filtering** (stay-in-domain, deduping)
+- **CSV reporting** for downstream analysis
+- **Unit tests** for core components
 
 ---
 
-## 🚀 Getting Started
+## 🗂️ Project structure
+├── main.go # CLI entrypoint
+├── config.go # CLI flags & configuration
+├── crawler.go # Crawl orchestration & queueing
+├── html.go # HTML parsing utilities (e.g., H1 extraction)
+├── url.go # URL normalization & helpers
+├── csv_report.go # CSV writer/report schema
+├── html_test.go # HTML parsing tests
+└── url_test.go # URL helper tests
+
+## 🚀 Quickstart
 
 ### Prerequisites
-- [Go 1.22+](https://go.dev/dl/)
-- Git
+- **Go 1.21+**: https://go.dev/dl/
+- **Git**
 
-### Clone the repository
+### Clone & install
 ```bash
 git clone https://github.com/chaasfr/crawler.git
 cd crawler
+go mod tidy
+```
+
+### Run
+```bash
+go run . {URL} maxConcurrency maxPages
+go run . wikipedia.org 5 20 #example
+```
+
+### Build and run executable
+```bash
+go build -o crawler .
+./crawler {URL} maxConcurrency maxPages
+./crawler wikipedia.org 5 20 #example
+```
+
+### Run tests locally
+```bash
+go test ./...
+```
