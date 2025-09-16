@@ -19,6 +19,16 @@ type PageData struct {
 	ImageUrls      []string
 }
 
+func (p PageData) toSlice() []string {
+	return []string{
+		p.Url,
+		p.H1,
+		p.FirstParagraph,
+		strings.Join(p.OutgoingLinks,";"),
+		strings.Join(p.ImageUrls,";"),
+	}
+}
+
 func getH1FromHTML(html string) string {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(html))
 	if err != nil {

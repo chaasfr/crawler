@@ -36,8 +36,7 @@ func main() {
 
 	cfg, err := configure(baseUrl.String(), maxConcurrency, maxPages)
 	if err != nil {
-		fmt.Printf("Error - configure: %v", err)
-		return
+		log.Fatalf("Error - configure: %v", err)
 	}
 
 	cfg.Wg.Add(1)
@@ -45,8 +44,12 @@ func main() {
 	cfg.Wg.Wait()
 
 	fmt.Println(" ==== DONE =====")
-	fmt.Printf(" crawled %v pages\n", len(cfg.Pages))
-	for key, _ := range cfg.Pages {
-		fmt.Printf("crawled %s \n", key)
+	
+	reportFileName := "report.csv"
+
+	err = writeCSVReport(cfg.Pages, reportFileName)
+	if err != nil {
+		log.Fatalf("error writing report: %s", err.Error())
 	}
+	fmt.Printf("report saved under %s", reportFileName)
 }
